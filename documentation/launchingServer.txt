@@ -1,0 +1,6 @@
+To launch the applicaiton:
+"uvicorn main:app --reload"
+
+uvicorn is the server application
+main is the entrypoint of the python project
+app is the object name of the fast api applicaiton in the main entrypoint
