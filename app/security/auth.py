@@ -34,9 +34,9 @@ class User(BaseModel):
     username: str
     email: Optional[str] = None
     full_name: Optional[str] = None
-    disabled: Optional[bool] = None
 
 class UserInDB(User):
+    disabled: Optional[bool] = False
     hashed_password: str
 
 class UserInCreation(User):
@@ -48,11 +48,6 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 router = APIRouter(prefix="/auth")
 
-def create_user(user: UserInCreation):
-    new_user = UserInDB(hashed_password=get_password_hash(user.password) , **user.dict())
-    print(new_user)
-
-    return new_user
 
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
@@ -73,6 +68,14 @@ def get_user(username: str):
     
     return None
 
+def create_user(user: UserInCreation):
+    if get_user(user.username):
+        return HTTPException(status_code=403, detail="User with that username already exists.")
+    
+    new_user = UserInDB(hashed_password=get_password_hash(user.password) , **user.dict())
+    db = get_user_db_instance()
+    created_user = db.insert(new_user.dict())
+    return User(**new_user.dict())
 
 def authenticate_user(username: str, password: str):
     user = get_user(username)
