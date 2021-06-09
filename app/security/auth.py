@@ -61,7 +61,6 @@ def get_user(username: str):
     Users = Query()
     db = get_user_db_instance()
     for record in db.search(Users.username == username):
-        print(record)
         if record["username"]  == username:
             user_dict = record
             return UserInDB(**user_dict)
