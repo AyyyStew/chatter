@@ -80,10 +80,24 @@ body{
 	border-radius: 5px;
 }
 
+.status-message{
+	margin-top: 1rem;
+	font-size: 1.185rem;
+}
+
+.error{
+	color: var(--cancel-color);
+}
+
+.success{
+	color: var(--confirm-color);
+}
+
+
 .form-controls{
 	display: flex;
 
-	margin-top: 8%;
+	margin-top: 1.25rem;
 }
 
 .form-controls>*{
