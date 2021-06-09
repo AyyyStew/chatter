@@ -7,7 +7,7 @@ from starlette.requests import Request
 router = APIRouter()
 
 # These paths seem fragile
-templates = Jinja2Templates(directory="./website/templates")
+templates = Jinja2Templates(directory="./templates")
 
 @router.get("/")
 @router.get("/index.html")
