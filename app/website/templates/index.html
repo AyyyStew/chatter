@@ -5,7 +5,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Login</title>
-	<link rel="stylesheet" href="styles/styles.css">
+	<link rel="stylesheet" href={{ url_for('static', path='styles/styles.css')}}>
 </head>
 <body>
 	<header class="page-header">
@@ -35,6 +35,6 @@
 		</form>
 	</div>
 
-	<script src="src/login.js"></script>
+	<script src={{ url_for('static', path='src/login.js')}}></script>
 </body>
 </html>
