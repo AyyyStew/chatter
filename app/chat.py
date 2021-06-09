@@ -1,12 +1,18 @@
-from fastapi import APIRouter, WebSocket
+import re
+from fastapi import APIRouter, WebSocket, Depends
+from fastapi.param_functions import Query
+from security.auth import get_current_active_user, User
 
 
-router = APIRouter(prefix="/api")
+prefix = "/api"
+router = APIRouter(prefix=prefix)
 
-
-
-@router.websocket("/ws")
+# weird prefix workaround
+# api router doens't prefix websockets
+# probably will be fixed later https://github.com/tiangolo/fastapi/pull/3280
+@router.websocket(f"{prefix}/chat")
 async def websocket_endpoint(websocket: WebSocket):
+    # print(token)
     await websocket.accept()
     while True:
         data = await websocket.receive_text()
