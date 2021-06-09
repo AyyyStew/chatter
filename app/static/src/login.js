@@ -14,9 +14,20 @@ const login = (username, password) =>{
 		},
 		method: "POST"
 	})
-	.then(response => response.json())
+	.then(response => {
+		// if the response is not 200, log an error and return
+		if (!response.ok){
+			const status = response.status
+			const message = response.statusText
+			throw {status , message}
+		}
+
+		return response.json()
+	})
 	.then(data => {
 		console.log('Success:', data);
+		sessionStorage.setItem("CHATTER_TOKEN", data.access_token)
+		window.location.replace("home.html")
 	})
 	.catch((error) => {
 		console.error('Error:', error);
