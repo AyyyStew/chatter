@@ -13,6 +13,3 @@ app.include_router(website.router)
 app.include_router(chat.router)
 
 app.mount("/static", StaticFiles(directory="./static/", html=True), name="static")
-
-
-
