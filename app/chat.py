@@ -1,12 +1,32 @@
 from logging import error
+from typing import List
 from fastapi import APIRouter, WebSocket, HTTPException, status
 from fastapi.param_functions import Query
 from security.auth import get_current_user, User 
-from models import store_message
+from models import store_message, Message
 
 
 prefix = "/api"
 router = APIRouter(prefix=prefix)
+
+
+# pub sub chat room
+class ChatRoom:
+    def __init__(self, roomID):
+        self.chatConnections : List[WebSocket] = []
+        self.roomId : str
+
+    def subscribe(self, websocket: WebSocket):
+        self.chatConnections.append(websocket)
+
+    async def publish(self, message: Message):
+        # messageWithoutChatroomID = message.copy().pop("chatroomID")
+        for connection in self.chatConnections:
+            await connection.send_text(message)
+        
+        # return True
+
+globalChat = ChatRoom(roomID=1)
 
 # weird prefix workaround
 # api router doens't prefix websockets
@@ -16,14 +36,19 @@ async def websocket_endpoint(websocket: WebSocket, token: str = Query(...)):
     print(token)
     # TODO Multiple Chatrooms
     chatroomID = 1
+
+    # remove hashed password from data we are going to send
     userWithTooManyDetails = await get_current_user(token)
     user : User =  User(**userWithTooManyDetails.dict())
+    
+    # if authenticated
     if user:
+        globalChat.subscribe(websocket)
         await websocket.accept()
         while True:
             data = await websocket.receive_text()
             store_message(user, data, chatroomID)
-            await websocket.send_text(f"Message text was: {data}")
+            await globalChat.publish(data)
     else:
         return HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate credentials",)
 
