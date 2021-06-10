@@ -16,7 +16,8 @@ async def websocket_endpoint(websocket: WebSocket, token: str = Query(...)):
     print(token)
     # TODO Multiple Chatrooms
     chatroomID = 1
-    user : User =  await get_current_user(token)
+    userWithTooManyDetails = await get_current_user(token)
+    user : User =  User(**userWithTooManyDetails.dict())
     if user:
         await websocket.accept()
         while True:
