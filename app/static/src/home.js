@@ -10,8 +10,10 @@ const redirectIfNoToken = ()=>{
 redirectIfNoToken()
 
 
-const connectToChat = ()=>{
-	chatSocket = new WebSocket(`ws:/${location.host}/api/chat?token=${sessionStorage.getItem("CHATTER_TOKEN")}`)
+chatSocket = new WebSocket(`ws:/${location.host}/api/chat?token=${sessionStorage.getItem("CHATTER_TOKEN")}`)
+chatSocket.addEventListener('message', (event) => {
+	console.log("Message Recieved: ", event)
+})
 
-}
-connectToChat()
+
+
