@@ -2,6 +2,7 @@ from logging import error
 from typing import List
 from fastapi import APIRouter, WebSocket, HTTPException, status
 from fastapi.param_functions import Query
+from starlette.websockets import WebSocketDisconnect
 from security.auth import get_current_user, User 
 from models import store_message, Message
 
@@ -10,22 +11,25 @@ prefix = "/api"
 router = APIRouter(prefix=prefix)
 
 
-# pub sub chat room
+# broadcast chatroom
 class ChatRoom:
     def __init__(self, roomID):
         self.chatConnections : List[WebSocket] = []
         self.roomId : str
 
-    def subscribe(self, websocket: WebSocket):
+    async def connect(self, websocket: WebSocket):
+        await websocket.accept()
         self.chatConnections.append(websocket)
 
-    async def publish(self, message: Message):
+    async def broadcast(self, message: Message):
         messageWithoutChatroomID = message.getJSONSafeMapping()
         messageWithoutChatroomID.pop("chatroomID")
         for connection in self.chatConnections:
             await connection.send_json(messageWithoutChatroomID)
         
-        # return True
+    def disconnect(self, websocket):
+        self.chatConnections.remove(websocket)
+
 
 globalChat = ChatRoom(roomID=1)
 
@@ -44,12 +48,14 @@ async def websocket_endpoint(websocket: WebSocket, token: str = Query(...)):
     
     # if authenticated
     if user:
-        globalChat.subscribe(websocket)
-        await websocket.accept()
-        while True:
-            data = await websocket.receive_text()
-            message : Message = store_message(user, data, chatroomID)
-            await globalChat.publish(message)
+        await globalChat.connect(websocket)
+        try:
+            while True:
+                data = await websocket.receive_text()
+                message : Message = store_message(user, data, chatroomID)
+                await globalChat.broadcast(message)
+        except WebSocketDisconnect:
+            globalChat.disconnect(websocket)
     else:
         return HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate credentials",)
 
