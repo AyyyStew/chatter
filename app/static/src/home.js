@@ -12,7 +12,9 @@ redirectIfNoToken()
 
 chatSocket = new WebSocket(`ws:/${location.host}/api/chat?token=${sessionStorage.getItem("CHATTER_TOKEN")}`)
 chatSocket.addEventListener('message', (event) => {
-	console.log("Message Recieved: ", event)
+	jsondata = JSON.parse(event.data)
+	console.log(jsondata)
+	
 })
 
 
