@@ -16,6 +16,7 @@ SECRET_KEY = "35effc2120a51255dacfdc4b7ac9e48e2b54aec21d9fcbf440c2ce6f21d23e78"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
+#TODO abstract the db and models out later
 def get_user_db_instance():
     db = TinyDB("./databases/users.json")
     usersTable = db.table("users")
