@@ -27,3 +27,4 @@ def store_message(user: User, message: str, chatroomID: str):
 	record : Message = Message(chatroomID=chatroomID, message=message, timestamp=datetime.now(), user=user)
 
 	chatroomTable.insert(record.getJSONSafeMapping())
+	return record

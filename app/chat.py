@@ -20,9 +20,10 @@ class ChatRoom:
         self.chatConnections.append(websocket)
 
     async def publish(self, message: Message):
-        # messageWithoutChatroomID = message.copy().pop("chatroomID")
+        messageWithoutChatroomID = message.getJSONSafeMapping()
+        messageWithoutChatroomID.pop("chatroomID")
         for connection in self.chatConnections:
-            await connection.send_text(message)
+            await connection.send_json(messageWithoutChatroomID)
         
         # return True
 
@@ -47,8 +48,8 @@ async def websocket_endpoint(websocket: WebSocket, token: str = Query(...)):
         await websocket.accept()
         while True:
             data = await websocket.receive_text()
-            store_message(user, data, chatroomID)
-            await globalChat.publish(data)
+            message : Message = store_message(user, data, chatroomID)
+            await globalChat.publish(message)
     else:
         return HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate credentials",)
 
