@@ -10,14 +10,13 @@ const redirectIfNoToken = ()=>{
 redirectIfNoToken()
 
 
+const globalChat = document.getElementById("global-chat")
 
 chatSocket = new WebSocket(`ws:/${location.host}/api/chat?token=${sessionStorage.getItem("CHATTER_TOKEN")}`)
 chatSocket.addEventListener('message', (event) => {
 	jsondata = JSON.parse(event.data)
 	console.log(jsondata)
 	
-	globalChat = document.getElementById("global-chat")
-
 	renderComment(globalChat, jsondata.message, jsondata.user.username, jsondata.timestamp)
 	
 })
@@ -34,7 +33,7 @@ const renderComment = (chatroom, text, username, timestamp) => {
 	// this couples the css and js. its probably a bad idea
 	let newComment = document.createElement("div")
 	newComment.classList.add("comment")
-	if (jsondata.user.username == username){
+	if (jsondata.user.username == currentUser){
 		newComment.classList.add("comment-from-me")
 	}
 	
