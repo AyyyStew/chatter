@@ -21,9 +21,14 @@ chatSocket.addEventListener('message', (event) => {
 	
 })
 
-sendButton = document.getElementById("global-chat").querySelector(".chat-textbox-send")
+sendButton = globalChat.querySelector(".chat-textbox-send")
 sendButton.addEventListener("click", ()=>{
+	textbox = globalChat.querySelector(".chat-textbox-field")
+	message = textbox.value
 
+	chatSocket.send(message)
+
+	textbox.value = ""
 })
 
 
