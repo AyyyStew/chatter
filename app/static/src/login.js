@@ -27,6 +27,9 @@ const login = async (username, password) =>{
 		// set api token in local storage
 		sessionStorage.setItem("CHATTER_TOKEN", data.access_token)
 
+		// set username in local storage
+		sessionStorage.setItem("CHATTER_USERNAME", username)
+
 		// send user to homepage
 		window.location.href = "home.html"
 		
@@ -41,10 +44,7 @@ const login = async (username, password) =>{
 		} else{
 			result.message = "There was an Error. Please try again Later"
 		}
-
 		return result
-
-
 	});
 }
 
